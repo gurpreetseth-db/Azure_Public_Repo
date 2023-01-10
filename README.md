@@ -1,13 +1,13 @@
-# Terraform patterns for Azure Databricks deployment
-This repo is for Terraform scripts to install Azure Databricks using varied methods. Each subdirectory is indepedent from each other, each represent a Terraform pattern of Azure Databricks workspace deployment.
+# Azure Public Repo
 
-Azure Databricks Deployment Patters:
+This repository is to share Databricks learning on Azure Platform. 
 
-1. `Azure_Databricks_Other_DB_Services_Basic` - Azure Managed Services, where by major Azure Database related services will be deployed (list below) and then will be used to demostrate how Azure Dtaabricks can interact with them all.
-    Azure Databricks
-    Azure SQL Database
-    Azure Synapse
-    Azure Cosmosdb
-    Azure Eventhub
-    Azure Storage
-    Azure Keyvault
+## Project 1
+Demostrate Azure Databricks integration with other Azure Data & Storage services
+
+1) Deploy Azure Environment using terraform script from `Azure_Databricks_DB_Services_Integration folder`
+2) Run Notebook from `Azure_Databricks_Other_DB_Services_Basic`
+
+
+
+
