@@ -48,38 +48,12 @@ resource "databricks_library" "cosmos" {
 
 
 
-//Create Secre Scope and Connect with Azure Key Vault
-resource "databricks_secret_scope" "kv" {
-  name = "Databricks-KeyVault-Scope"
-  initial_manage_principal = "users"
 
-  keyvault_metadata {
-    resource_id = var.keyvault_id
-    dns_name    = var.keyvault_url
-  }
-
-}
-// Completed //
-
-// create PAT token to provision entities within workspace
-resource "databricks_token" "pat" {
-  provider = databricks
-  comment  = "Terraform Provisioning"
-  // 100 day token
-  lifetime_seconds = 8640000
-}
-
-// Add token to key vault
-resource "azurerm_key_vault_secret" "databricks_pat_token" {
-  name         = "databricks-pat-token"
-  value        = databricks_token.pat.token_value
-  key_vault_id = var.keyvault_id
-}
 
 
 // output token for other modules
-output "databricks_token" {
-  value     = databricks_token.pat.token_value
-  sensitive = true
-}
+//output "databricks_token" {
+//  value     = databricks_token.pat.token_value
+//  sensitive = true
+//}
 // Completed //
