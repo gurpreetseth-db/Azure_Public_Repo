@@ -1,6 +1,6 @@
 
 resource "azurerm_cosmosdb_account" "db" {
-  name                = "${local.prefix}-cosmosdb"
+  name                = "${local.prefix}-cosmosdb-099"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
   offer_type          = "Standard"
@@ -22,23 +22,12 @@ resource "azurerm_cosmosdb_account" "db" {
 
 }
 
-// Add SQL Admin User & Password in Key Vault
-
-resource "azurerm_key_vault_secret" "cosmosdbendpoint" {
-  name         = "cosmosdb-account-endpoint"
-  value        = azurerm_cosmosdb_account.db.endpoint
-  key_vault_id = azurerm_key_vault.example.id
-}
-
-resource "azurerm_key_vault_secret" "cosmosdbaccountkey" {
-  name         = "cosmosdb-accountkey"
-  value        = azurerm_cosmosdb_account.db.primary_key
-  key_vault_id = azurerm_key_vault.example.id
-}
-
 resource "azurerm_cosmosdb_sql_database" "example" {
   name                = "cosmos"
   resource_group_name = azurerm_cosmosdb_account.db.resource_group_name
   account_name        = azurerm_cosmosdb_account.db.name
   throughput          = 400
+
 }
+
+

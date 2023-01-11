@@ -1,6 +1,6 @@
 
 resource "azurerm_eventhub_namespace" "example" {
-  name                = "${local.prefix}-eventhub"
+  name                = "${local.prefix}-eventhub-099"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
   sku                 = "Basic"
@@ -9,7 +9,7 @@ resource "azurerm_eventhub_namespace" "example" {
 }
 
 resource "azurerm_eventhub" "example" {
-  name = "${local.prefix}-eventhub-databricks"
+  name = "${local.prefix}-eventhub-databricks-099"
   namespace_name      = azurerm_eventhub_namespace.example.name
   resource_group_name = azurerm_resource_group.example.name   
   partition_count = 2
@@ -26,9 +26,3 @@ resource "azurerm_eventhub_authorization_rule" "example" {
   manage              = true
 }
 
-// Add Primary Connection To KeyVault For Azure EventHub created above
-resource "azurerm_key_vault_secret" "eventhubstring" {
-  name         = "eventhub-databricks-sas-connection-string"
-  value        = azurerm_eventhub_authorization_rule.example.primary_connection_string
-  key_vault_id = azurerm_key_vault.example.id
-}

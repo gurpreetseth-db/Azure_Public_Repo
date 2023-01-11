@@ -6,17 +6,19 @@
 //}
 
 //File System (Created in Storge Account we created ealier)
-resource "azurerm_storage_data_lake_gen2_filesystem" "example" {
-  name               = "synapse"
-  storage_account_id = azurerm_storage_account.example.id
-}
+
+//resource "azurerm_storage_data_lake_gen2_filesystem" "example" {
+//  name               = "synapse"
+//  storage_account_id = azurerm_storage_account.example.id
+//}
 
 resource "azurerm_synapse_workspace" "example" {
-  name                                 = "${local.prefix}-synapse"
+  name                                 = "${local.prefix}-synapse-099"
   resource_group_name                  = azurerm_resource_group.example.name
   managed_resource_group_name          = "${substr(lower(var.name),0,3)}-synapse-rg"
   location                             = azurerm_resource_group.example.location
-  storage_data_lake_gen2_filesystem_id = azurerm_storage_data_lake_gen2_filesystem.example.id
+  //storage_data_lake_gen2_filesystem_id = azurerm_storage_data_lake_gen2_filesystem.example.id
+  storage_data_lake_gen2_filesystem_id = "https://${azurerm_storage_account.example.name}.dfs.core.windows.net/synapse"
   sql_administrator_login              = "sqladmin"
   sql_administrator_login_password     = "P@ssword!!!"
   tags                                 = local.tags
@@ -54,25 +56,4 @@ resource "azurerm_synapse_firewall_rule" "example" {
   synapse_workspace_id = azurerm_synapse_workspace.example.id
   start_ip_address     = "0.0.0.0"
   end_ip_address       = "255.255.255.255"
-}
-
-// Add Synapse Admin User & Password in Key Vault
-
-resource "azurerm_key_vault_secret" "synapseurl" {
-  name         = "synapse-jdbc-connection-string"
-  value        =  "jdbc:sqlserver://${azurerm_synapse_workspace.example.name}.sql.azuresynapse.net:1433;database=${azurerm_synapse_sql_pool.example.name};"
-  key_vault_id = azurerm_key_vault.example.id
-}
-
-
-resource "azurerm_key_vault_secret" "synapseuser" {
-  name         = "synapse-db-user"
-  value        = azurerm_synapse_workspace.example.sql_administrator_login
-  key_vault_id = azurerm_key_vault.example.id
-}
-
-resource "azurerm_key_vault_secret" "synapsepassword" {
-  name         = "synapse-db-password"
-  value        = azurerm_synapse_workspace.example.sql_administrator_login_password
-  key_vault_id = azurerm_key_vault.example.id
 }

@@ -75,3 +75,148 @@ module "auto_scaling_cluster_cosmosdb" {
 
 depends_on = [azurerm_key_vault.example]
 }
+
+
+// Add SQL Admin User & Password in Key Vault
+
+resource "azurerm_key_vault_secret" "cosmosdbendpoint" {
+  name         = "cosmosdb-account-endpoint"
+  value        = azurerm_cosmosdb_account.db.endpoint
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_cosmosdb_sql_database.example]
+}
+
+resource "azurerm_key_vault_secret" "cosmosdbaccountkey" {
+  name         = "cosmosdb-accountkey"
+  value        = azurerm_cosmosdb_account.db.primary_key
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_cosmosdb_sql_database.example]  
+}
+
+
+// Add Primary Connection To KeyVault For Azure EventHub created above
+resource "azurerm_key_vault_secret" "eventhubstring" {
+  name         = "eventhub-databricks-sas-connection-string"
+  value        = azurerm_eventhub_authorization_rule.example.primary_connection_string
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_eventhub.example]    
+}
+
+
+// Add SQL Admin User & Password in Key Vault
+
+resource "azurerm_key_vault_secret" "url" {
+  name         = "sqlserver-jdbc-connection-string"
+  value        =  "jdbc:sqlserver://${azurerm_mssql_server.example.fully_qualified_domain_name};database=${azurerm_mssql_database.example.name};"
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_mssql_database.example]      
+}
+
+
+resource "azurerm_key_vault_secret" "user" {
+  name         = "sqlserver-db-user"
+  value        = azurerm_mssql_server.example.administrator_login
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_mssql_database.example]    
+}
+
+resource "azurerm_key_vault_secret" "password" {
+  name         = "sqlserver-db-password"
+  value        = azurerm_mssql_server.example.administrator_login_password
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_mssql_database.example]    
+}
+
+
+//create a container named DataSet to copy few sample files
+resource "azurerm_storage_container" "example" {
+  name                  = "datasets"
+  storage_account_name  = azurerm_storage_account.example.name
+  container_access_type = "private"
+}
+
+//create a container named DataSet to copy few sample files
+resource "azurerm_storage_container" "synapse" {
+  name                  = "synapse"
+  storage_account_name  = azurerm_storage_account.example.name
+  container_access_type = "private"
+}
+
+//create a container named DataSet to copy few sample files
+resource "azurerm_storage_container" "synapse_tmp" {
+  name                  = "synapsetemp"
+  storage_account_name  = azurerm_storage_account.example.name
+  container_access_type = "private"
+}
+
+
+
+// Add Storage Name & SAS Key to KeyVault
+
+resource "azurerm_key_vault_secret" "storagaccount" {
+  name         = "storage-account-name"
+  value        = azurerm_storage_account.example.name
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_storage_account.example]    
+}
+
+resource "azurerm_key_vault_secret" "storageacesskey" {
+  name         = "storage-access-key"
+  value        = azurerm_storage_account.example.primary_access_key
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_storage_account.example]     
+}
+
+
+// Add Synapse Admin User & Password in Key Vault
+
+resource "azurerm_key_vault_secret" "synapseurl" {
+  name         = "synapse-jdbc-connection-string"
+  value        =  "jdbc:sqlserver://${azurerm_synapse_workspace.example.name}.sql.azuresynapse.net:1433;database=${azurerm_synapse_sql_pool.example.name};"
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_synapse_sql_pool.example]     
+}
+
+
+resource "azurerm_key_vault_secret" "synapseuser" {
+  name         = "synapse-db-user"
+  value        = azurerm_synapse_workspace.example.sql_administrator_login
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_synapse_sql_pool.example]       
+}
+
+resource "azurerm_key_vault_secret" "synapsepassword" {
+  name         = "synapse-db-password"
+  value        = azurerm_synapse_workspace.example.sql_administrator_login_password
+  key_vault_id = azurerm_key_vault.example.id
+  depends_on = [azurerm_synapse_sql_pool.example]       
+}
+
+// create PAT token to provision entities within workspace
+resource "databricks_token" "pat" {
+  provider = databricks
+  comment  = "Terraform Provisioning"
+  // 100 day token
+  lifetime_seconds = 8640000
+}
+
+// Add token to key vault
+resource "azurerm_key_vault_secret" "databricks_pat_token" {
+  name         = "databricks-pat-token"
+  value        = databricks_token.pat.token_value
+  key_vault_id = azurerm_key_vault.example.id
+}
+
+
+
+//Create Secre Scope and Connect with Azure Key Vault
+resource "databricks_secret_scope" "kv" {
+  name = "Databricks-KeyVault-Scope"
+  initial_manage_principal = "users"
+
+  keyvault_metadata {
+    resource_id = azurerm_key_vault.example.id
+    dns_name    = azurerm_key_vault.example.vault_uri
+  }
+
+}
