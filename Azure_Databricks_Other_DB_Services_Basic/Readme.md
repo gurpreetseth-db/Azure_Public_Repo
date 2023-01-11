@@ -68,7 +68,7 @@ Open, Azure Key Vault -> Secrets and we shall see bunch of Secrets already saved
  
 Next, we need to 
  
-1) **Grant Get & List access to Azure Databricks on Azure Key Vault**
+1) **Grant Get & List access to Azure Databricks on Azure Key Vault** **(IF NOT EXISTS)**
   
    a. Open Azure Keyvault, Click on Access Policies
               
@@ -99,6 +99,11 @@ Next, we need to
    ![image](https://user-images.githubusercontent.com/95003669/211458629-c19a3ea5-4c20-4839-b965-92df8f5bb376.png)
 
 
+## Known Issue
+
+1) Installation of Libararies on Databricks Cluster Fails
+    - If this happens, please shutdown both of the clusters i.e. `"Single User - Cosmosdb"` and `"Single User Autoscaling"`
+    - Re-run `"terraform apply"` command and it shall work
 
 ## Resources Used
 |  Name                                                                                                                                       | Type     |
