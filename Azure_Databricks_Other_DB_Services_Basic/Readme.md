@@ -53,12 +53,16 @@ In `terraform.tfvars`, set these variables:
   | --------------------------------|-------------------------|------------------------------------------------------------------------------------------ |
   | name                            | First Name & Last Name  | First 3 character of Fist Name will be used to create as suffix for each deployed resources | 
   
+
 ## Post Deployment Steps
 
 Post successful deployment, one shall see 9 resources deployed (check below screenshot)
   
   ![image](https://user-images.githubusercontent.com/95003669/211424156-255db7c2-6df8-4f4f-bae1-3979a936df17.png)
-  
+ 
+### Note
+ Post successfull deployment, **Azure Databricks Clusters** and **Azure Synapse DB Pool** will be in **running state** so **please stop them**.
+
 Open, Azure Key Vault -> Secrets and we shall see bunch of Secrets already saved. These secrets save information about environment like JDBC URLs, User ad Password details etc... which can be used in notebooks to connect to respective service.
 
 **Note**, Secrets with name as **Azure-*** are Service Principal related which is not required but if want to test Azure Storage connectivity from Azure Databricks via Credential Pass Through then this is required. Follow process mentioned (below in this document) **Create Service Principal** for the same.
