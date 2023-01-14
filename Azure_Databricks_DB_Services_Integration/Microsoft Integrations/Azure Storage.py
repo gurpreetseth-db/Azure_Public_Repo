@@ -4,13 +4,27 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC 
-# MAGIC ## PLEASE COPY *sample_data.json* file from *datasets* folder to your blog storage before continue further.
+# MAGIC # Azure Storage
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC # Azure Storage
+# MAGIC ### Create some sample JSON data
+
+# COMMAND ----------
+
+# Sample JSON Data
+from pyspark.sql.functions import from_json
+from pyspark.sql.types import StructType, StructField, StringType
+
+json_data = '[{"name":"John", "age":30, "city":"New York"}, \
+            {"name":"Mike", "age":25, "city":"Chicago"}, \
+            {"name":"Sarah", "age":35, "city":"Los Angeles"}]'
+
+json_rdd = spark.sparkContext.parallelize([json_data])
+json_df = spark.read.json(json_rdd)
+json_df.show()
+
 
 # COMMAND ----------
 
@@ -18,10 +32,10 @@
 
 # COMMAND ----------
 
-# MAGIC %md #### Using a Storage Account Key (SAS)
+# MAGIC %md #### Using a Storage Account Key (SAK)
 # MAGIC * Provide Storage Account Name
 # MAGIC * Container Name
-# MAGIC * SAS Key Value
+# MAGIC * Storage Access Key Value
 
 # COMMAND ----------
 
@@ -36,18 +50,42 @@ storage_account_name = dbutils.secrets.get(scope = akv_secret_scope, key = akv_s
 storage_account_access_key = dbutils.secrets.get(scope = akv_secret_scope, key = akv_storage_access_key)
 storage_container = "datasets"
 
-filename = 'sample_data.json'
+filename = 'sample_json'
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Connect to Storage via WASBS method using Storage Access Keys
+
+# COMMAND ----------
+
+# Connect to storage via Storage Account Key
 
 file_location = "wasbs://" + storage_container + "@" + storage_account_name + ".blob.core.windows.net/"
-file_type = "json"
 spark.conf.set("fs.azure.account.key."+storage_account_name+".blob.core.windows.net", storage_account_access_key)
 
 
-df = spark.read.format(file_type).option("inferSchema", "true").load(file_location + filename)
-df.head(5)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Write Data to Storage
+
+# COMMAND ----------
+
+json_df.write.mode('Overwrite').json(file_location + filename)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ###Read JSON Data
+
+# COMMAND ----------
+
+# Write Data to Storage
+
+df = spark.read.format("json").option("inferSchema", "true").load(file_location + filename)
+df.show()
 
 # COMMAND ----------
 
@@ -92,7 +130,7 @@ spark.conf.set(
   "fs.azure.sas."+storage_container+"."+storage_account_name+".blob.core.windows.net",
   sas_blob)
 
-df = spark.read.format(file_type).option("inferSchema", "true").load(file_location + filename)
+df = spark.read.format("json").option("inferSchema", "true").load(file_location + filename)
 df.head(5)
 
 # COMMAND ----------
@@ -165,7 +203,7 @@ df.createOrReplaceTempView('ksptelem')
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC select avg(alt), utime from ksptelem group by utime
+# MAGIC select avg(age) from ksptelem
 
 # COMMAND ----------
 
