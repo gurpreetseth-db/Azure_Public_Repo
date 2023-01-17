@@ -82,7 +82,7 @@ json_df.write.mode('Overwrite').json(file_location + filename)
 
 # COMMAND ----------
 
-# Write Data to Storage
+# Read Data From Storage
 
 df = spark.read.format("json").option("inferSchema", "true").load(file_location + filename)
 df.show()
@@ -296,8 +296,8 @@ dbutils.fs.mount(
 
 # COMMAND ----------
 
-# MAGIC %sh
-# MAGIC head /dbfs/mnt/datasets/sample_data.json
+df = spark.read.format("json").option("inferSchema", "true").load("/mnt/datasets/" + filename)
+df.show()
 
 # COMMAND ----------
 
