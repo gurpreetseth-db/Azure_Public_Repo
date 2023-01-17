@@ -36,8 +36,22 @@ adlscontainer = 'synapse'
 
 # COMMAND ----------
 
+# Extract Synapse workspace name to add in connection string next 
+import re
+
+connection_string = conn_url
+
+match = re.search(r'//(.*?).sql', connection_string)
+
+if match:
+    extracted_string = match.group(1)
+else:
+    print("No match found.")
+
+# COMMAND ----------
+
 # Setup some connection parameters
-conn_string = conn_url+';user='+username+'@gur-synapse;password='+password+';encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.sql.azuresynapse.net;loginTimeout=30;'
+conn_string = conn_url+';user='+username+'@'+extracted_string+';password='+password+';encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.sql.azuresynapse.net;loginTimeout=30;'
 
 #spark conf to use this later in SQL connection
 spark.conf.set("synapse.conn_string",conn_string)
