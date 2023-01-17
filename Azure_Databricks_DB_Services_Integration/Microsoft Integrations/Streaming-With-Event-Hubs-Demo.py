@@ -71,9 +71,9 @@
 # MAGIC %scala
 # MAGIC import org.apache.spark.eventhubs.{EventHubsConf, EventPosition}
 # MAGIC 
-# MAGIC //val connectionString = dbutils.secrets.get(scope = "Databricks-KeyVault-Scope", key = "eventhub-databricks-sas-connection-string")
+# MAGIC val connectionString = dbutils.secrets.get(scope = "Databricks-KeyVault-Scope", key = "eventhub-databricks-sas-connection-string")
 # MAGIC 
-# MAGIC val connectionString = "Endpoint=sb://gur-eventhub.servicebus.windows.net/;SharedAccessKeyName=Default;SharedAccessKey=YeJhmOnejWFo1bKRlBzaFyPo2a/LpYdSQGZ4ensQFU4=;EntityPath=gur-eventhub-databricks"
+# MAGIC //val connectionString = "Endpoint=sb://gur-eventhub.servicebus.windows.net/;SharedAccessKeyName=Default;SharedAccessKey=YeJhmOnejWFo1bKRlBzaFyPo2a/LpYdSQGZ4ensQFU4=;EntityPath=gur-eventhub-databricks"
 # MAGIC 
 # MAGIC val ehWriteConf = EventHubsConf(connectionString)
 
