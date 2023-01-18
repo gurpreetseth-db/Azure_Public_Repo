@@ -51,7 +51,7 @@ else:
 # COMMAND ----------
 
 # Setup some connection parameters
-conn_string = conn_url+';user='+username+'@'+extracted_string+';password='+password+';encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.sql.azuresynapse.net;loginTimeout=30;'
+conn_string = conn_url+'user='+username+'@'+extracted_string+';password='+password+';encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.sql.azuresynapse.net;loginTimeout=30;'
 
 #spark conf to use this later in SQL connection
 spark.conf.set("synapse.conn_string",conn_string)
